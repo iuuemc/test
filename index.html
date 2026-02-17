@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Yes / No</title>
+  <style>
+    :root{
+      --yesScale: 1;
+      --noScale: 1;
+    }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans Thai", sans-serif;
+      height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#ffffff;
+      color:#111;
+    }
+    .wrap{
+      width:min(560px, 92vw);
+      text-align:center;
+    }
+    .question{
+      font-size: clamp(22px, 3vw, 34px);
+      font-weight:700;
+      line-height:1.2;
+      margin-bottom: 28px;
+    }
+    .buttons{
+      display:flex;
+      gap:14px;
+      justify-content:center;
+      align-items:center;
+    }
+    button{
+      border:none;
+      padding: 14px 22px;
+      border-radius: 14px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor:pointer;
+      transition: transform .2s ease, opacity .2s ease, width .2s ease;
+      min-width: 120px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.10);
+    }
+    #yesBtn{
+      background:#22c55e;
+      color:white;
+      transform: scale(var(--yesScale));
+    }
+    #noBtn{
+      background:#ef4444;
+      color:white;
+      transform: scale(var(--noScale));
+    }
+
+    /* หน้าโล่งหลังกด yes */
+    .blank{
+      background:#fff;
+      color:#111;
+    }
+    .blank .wrap{
+      display:none;
+    }
+    .blank .after{
+      display:flex;
+    }
+    .after{
+      display:none;
+      position:fixed;
+      inset:0;
+      align-items:center;
+      justify-content:center;
+      font-size: clamp(22px, 3vw, 36px);
+      font-weight:800;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap" id="main">
+    <div class="question" id="q">คุณเป็นเมะไหม ?</div>
+    <div class="buttons">
+      <button id="yesBtn">Yes</button>
+      <button id="noBtn">No</button>
+    </div>
+  </div>
+
+  <div class="after" id="after">🙂</div>
+
+  <script>
+    const root = document.documentElement;
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn  = document.getElementById("noBtn");
+    const after  = document.getElementById("after");
+
+    let noCount = 0;
+    const maxNo = 5;
+
+    function setScales(yesScale, noScale){
+      root.style.setProperty("--yesScale", yesScale.toFixed(3));
+      root.style.setProperty("--noScale",  Math.max(noScale, 0).toFixed(3));
+    }
+
+    // เริ่มต้น
+    setScales(1, 1);
+
+    noBtn.addEventListener("click", () => {
+      noCount++;
+
+      // ปรับสเกลทุกครั้งที่กด No
+      const yesScale = 1 + (noCount * 0.28);     // ใหญ่ขึ้นเรื่อย ๆ
+      const noScale  = 1 - (noCount * 0.18);     // เล็กลงเรื่อย ๆ
+      setScales(yesScale, noScale);
+
+      // ครบ 5 ครั้งให้ No หายไป
+      if (noCount >= maxNo) {
+        noBtn.style.opacity = "0";
+        noBtn.style.pointerEvents = "none";
+        noBtn.style.minWidth = "0";
+        noBtn.style.padding = "0";
+        noBtn.style.borderRadius = "0";
+        noBtn.textContent = "";
+      }
+    });
+
+    yesBtn.addEventListener("click", () => {
+      // หน้าโล่ง: ซ่อนทุกอย่าง เหลือพื้นขาว + อีโมจิกลางจอ
+      document.body.classList.add("blank");
+      after.textContent = "ยินดีด้วย คุณเป็นเมะ ✅";
+    });
+  </script>
+</body>
+</html>
